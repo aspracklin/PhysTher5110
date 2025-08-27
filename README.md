@@ -14,5 +14,8 @@ Hi! I'm Anna, I'm a first year PhD student in movement science.
 - Generative AI for research
 
 ## Favorite Open Science Tools
+
 - github
 - Artisynth
+
+🎃🎃🎃
