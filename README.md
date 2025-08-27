@@ -12,3 +12,7 @@ Hi! I'm Anna, I'm a first year PhD student in movement science.
 - Data visualization
 - Dimensionality reduction
 - Generative AI for research
+
+## Favorite Open Science Tools
+- github
+- Artisynth
