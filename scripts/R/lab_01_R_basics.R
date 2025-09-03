@@ -141,3 +141,61 @@ for(i in seq(1:3)){
 }
 
 
+## Assignment
+# equivalent to matlab help function instead in R ?function
+# Problem 2 - define vector A
+A = c(1,1,1,1)
+print(A)
+
+# Problem 3 - define vector B
+B = c(2,3)
+print(B)
+
+# Problem 4 - multiply vectors A and B
+C = A*B
+print(C)
+
+# Problem 5
+for (i in 1:10) {
+  print(i)
+}
+
+# Problem 6
+sum = 0
+for (i in 1:10){
+  sum = sum + i
+  print(sum)
+} 
+
+# Problem 7
+#rep function repeat, rnorm (generate random data)
+sex <- factor(c(rep("male", 20), rep("female", 20))) #create an object with 40 observances 20 male, 20 female
+height <- c(rnorm(20, mean=67, sd=2.5), rnorm(20, 64, 2.2)) # create array corresponding to sex array with normalized height (different for male and female)
+
+# create data structure
+dat1 <- data.frame(sex,height)
+
+# take mean of male/female height
+m_male <- mean(dat1$height[dat1$sex == "male"])
+sd_male <- sd(dat1$height[dat1$sex == "male"])
+print("Male mean")
+print(m_male)
+print("Male standard deviation")
+print(sd_male)
+
+m_female <- mean(dat1$height[dat1$sex == "female"])
+sd_female <- sd(dat1$height[dat1$sex == "female"])
+print("Female mean")
+print(m_female)
+print("Female standard deviation")
+print(sd_female)
+
+# mean -- another option
+tapply(dat1$height, sex, mean)
+# standard deviation
+tapply(dat1$height, sex, sd)
+
+# Problem 8
+plot(height~sex, data=dat1)
+#hist(dat1$height) #just for fun
+
