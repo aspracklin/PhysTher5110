@@ -1,23 +1,21 @@
 library(tidyverse)
 
-setwd("~/GitHub/PhysTher5110/")
+setwd("Documents/GitHub/PhysTher5110/")
 list.files("./data/gait_example_data")
 
+# Import raw data
 RAW_DAT <- read.csv("./data/gait_example_data/DDH25_0Run01.csv", header=FALSE,
                     sep=c(","), na.strings=c(" ", ""))
 
 
 # Reshaping/labeling the FORCE data --------------------------------------------
-RAW_DAT <- read.csv("./data/gait_example_data/DDH25_0Run01.csv", header=FALSE,
-                    sep=c(","), na.strings=c(" ", ""))
-
 FORCE_DAT <- RAW_DAT[6:9795,]
 head(FORCE_DAT)
 
 FORCE_LABS <- RAW_DAT[3:4,]
 FORCE_LABS
 
-FORCE_LABS <- data.frame(t(FORCE_LABS))
+FORCE_LABS <- data.frame(t(FORCE_LABS)) # t to transpose
 FORCE_LABS
 
 colnames(FORCE_LABS) <- c("level1", "level2")
@@ -90,7 +88,7 @@ plot(FORCE_DAT$force_z, type="l")
 
 plot(FORCE_DAT$cop_y, type="l")
 plot(FORCE_DAT$cop_x, type="l")
-plot(FORCE_DAT$cop_z, type="l")
+plot(FORCE_DAT$cop_z, type="l") #z is probably up/down because center of pressure is a planar measure
 
 
 head(MOTION_DAT)
@@ -109,9 +107,9 @@ MOTION_DAT <- MOTION_DAT %>% select(`DDH25:RICAL_X`,
   rownames_to_column(var="sample") %>%
   mutate(sample = as.numeric(sample)-3) # To start the samples at 1
 
-plot(MOTION_DAT$right_heel_x, type="l")
-plot(MOTION_DAT$right_heel_y, type="l")
-plot(MOTION_DAT$right_heel_z, type="l")
+plot(MOTION_DAT$right_heel_x, type="l") # range ~100 mm - drift
+plot(MOTION_DAT$right_heel_y, type="l") # range ~500 mm, smoother
+plot(MOTION_DAT$right_heel_z, type="l") # range ~300 mm, sinusoid-ish
 
 plot(MOTION_DAT$left_heel_x, type="l")
 plot(MOTION_DAT$left_heel_y, type="l")
@@ -121,13 +119,13 @@ plot(MOTION_DAT$left_heel_z, type="l")
 # Down sampling the data to align FORCE and MOTION -----------------------------
 # Note that the force data is sampled at a much higher rate
 # (2000 Hz) than the motion capture data (200 Hz).
-# This leades to a much longer time series for the force data
+# This leads to a much longer time series for the force data
 # compared to the motion data.
 # Therefore, in order to combine these two time series, we will
 # need to DOWN SAMPLE the force data. One simple way we can do 
 # this is by taking every tenth force observation:
 
-FORCE_DAT_DS <- FORCE_DAT[c(seq(from=1, to=nrow(FORCE_DAT), by=10)),]
+FORCE_DAT_DS <- FORCE_DAT[c(seq(from=1, to=nrow(FORCE_DAT), by=10)),] 
 
 
 # The two datasets are now aligned in time and can be merged
@@ -156,7 +154,7 @@ plot(x=MERGED$sample, y=MERGED$left_heel_y)
 # Relationship between left and right heel
 plot(x=MERGED$left_heel_y, y=MERGED$right_heel_y)
 # Why does force look like a figure-8 compared to right heel?
-plot(y=MERGED$force_z, x=MERGED$right_heel_z)
+plot(y=MERGED$force_y, x=MERGED$right_heel_y)
 
 
 # Visualizing left and right heel position at the same time --------------------
@@ -168,7 +166,7 @@ head(MERGED)
 ggplot(data=MERGED, aes(x=sample)) +
   geom_point(aes(y=right_heel_z), shape=21, col=cbPalette[2])+
   geom_point(aes(y=left_heel_z), shape=21, col=cbPalette[3])+
-  scale_y_continuous(name = "Force") +
+  scale_y_continuous(name = "Heel Position") +
   scale_x_continuous(name = "Time (samples)")+
   theme_bw()+
   scale_fill_manual(values=cbPalette)+
@@ -183,6 +181,42 @@ ggplot(data=MERGED, aes(x=sample)) +
         legend.position = "bottom")
   
 
-
+identify_step <- function(force_data) {
+  # initialize data frame
+  df <- data.frame()
+  for (i in 2:length(force_data)) {
+    # calculate derivative of force data
+    slope <- force_data[i]-force_data[i-1]
+    df <- rbind(df,slope)
+  }
+  colnames(df) <- c("deriv")
+  # set threshold to determine when the force is at it's peak
+  threshold = 0.01
+  # find slopes within that threshold
+  idx = which(abs(df$deriv)<threshold)
+  
+  # initialize data frame to save the indices
+  idStep<-data.frame(idx[1])
+  for (i in 2:length(idx)) {
+    if(idx[i]-idx[i-1]!=1){
+      idStep <- rbind(idStep,idx[i])
+    }
+  }
+  colnames(idStep) <- c("idxStep")
+  nSteps = dim(idStep)[1]
+  print('Number of Steps')
+  print(nSteps)
+  duration <- data.frame()
+  for (i in 2:length(idStep)) {
+    duration <- rbind(duration,idStep$idxStep[i]-idStep$idxStep[i-1])
+  }
+  colnames(duration) <- c("dur")
+  print('Duration of steps [frames]')
+  print(mean(duration$dur))
+  print('Duration of steps [sec]')
+  print(mean(duration$dur)/200)#divide by 200 to convert from frames to time (200fps)
+  # return indices
+  return(idStep)
+}
 
 
