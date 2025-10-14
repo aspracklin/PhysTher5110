@@ -219,4 +219,4 @@ identify_step <- function(force_data) {
   return(idStep)
 }
 
-
+Step_indeces <- identify_step(MERGED$force_z)
