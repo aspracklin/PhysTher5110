@@ -7,45 +7,44 @@ getwd()
 
 ## 1.0 Plotting Discrete Data --------------------------------------------------
 # Anscombe's Quartet and the Importance of Checking Assumptions
-DAT1 <- read.csv("./data/data_ANSCOMBE.csv", header = TRUE, sep = ",")
-head(DAT1)
+#DAT1 <- read.csv("./data/data_ANSCOMBE.csv", header = TRUE, sep = ",")
+#head(DAT1)
 
 
 ## Regression Coefficients ---- 
-COEFS<-DAT1 %>%
-  group_by(group) %>%
-  summarise(Intercept=lm(yVal~xVal, data=DAT1)$coefficients[1],
-            Slope=lm(yVal~xVal, data=DAT1)$coefficients[2],
-            MeanY=mean(yVal),
-            SDY = sd(yVal),
-            MeanX=mean(xVal),
-            SDX = sd(xVal))
-COEFS
+#COEFS<-DAT1 %>%
+#  group_by(group) %>%
+#  summarise(Intercept=lm(yVal~xVal, data=DAT1)$coefficients[1],
+#            Slope=lm(yVal~xVal, data=DAT1)$coefficients[2],
+#            MeanY=mean(yVal),
+#            SDY = sd(yVal),
+#            MeanX=mean(xVal),
+#            SDX = sd(xVal))
+#COEFS
 
 
 # Visualizing All the Data
-ggplot(DAT1, aes(x = xVal, y = yVal)) +
-  geom_point(aes(fill=as.factor(group)), pch=21, color="black", size=2)+
-  stat_smooth(aes(col=as.factor(group)), method="lm", se=FALSE, lwd=1)+
-  facet_wrap(~group, ncol=2)+
-  scale_x_continuous(name = "X Values") +
-  scale_y_continuous(name = "Y Values") +
-  theme(axis.text=element_text(size=16, color="black"), 
-        axis.title=element_text(size=16, face="bold"),
-        plot.title=element_text(size=16, face="bold", hjust=0.5),
-        panel.grid.minor = element_blank(),
+#ggplot(DAT1, aes(x = xVal, y = yVal)) +
+#  geom_point(aes(fill=as.factor(group)), pch=21, color="black", size=2)+
+#  stat_smooth(aes(col=as.factor(group)), method="lm", se=FALSE, lwd=1)+
+#  facet_wrap(~group, ncol=2)+
+#  scale_x_continuous(name = "X Values") +
+#  scale_y_continuous(name = "Y Values") +
+#  theme(axis.text=element_text(size=16, color="black"), 
+#        axis.title=element_text(size=16, face="bold"),
+#        plot.title=element_text(size=16, face="bold", hjust=0.5),
+#        panel.grid.minor = element_blank(),
         #axis.text.y=element_blank(),
         #axis.title.y=element_blank(),
         #axis.ticks.y=element_blank(),
-        legend.position = "none")
+#        legend.position = "none")
 
-
+#head(DATA)
 
 
 ## Disctrete Categorical Data
 DAT2 <- read.csv("./data/data_FINAL_RATINGS.csv", header = TRUE, sep = ",")
 head(DAT2)
-
 
 MEANS<-DAT2 %>%
   group_by(Elevation, Speed) %>%
@@ -55,47 +54,14 @@ MEANS<-DAT2 %>%
 
 MEANS
 
-# Just the means
-ggplot(MEANS, aes(x = Elevation, y = ave_Effort)) +
-  geom_bar(aes(fill=Elevation), stat="identity", width = 0.5)+
-  facet_wrap(~Speed) +
-  scale_y_continuous(name = "Effort (%)", limits = c(0,100)) +
-  scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
-  scale_color_manual(values=c("#E69F00", "#56B4E9"))+ 
-  #scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
-  theme(axis.text=element_text(size=16, color="black"), 
-        axis.title=element_text(size=16, face="bold"),
-        plot.title=element_text(size=16, face="bold", hjust=0.5),
-        panel.grid.minor = element_blank(),
-        strip.text = element_text(size=16, face="bold"),
-        legend.position = "none")
-
-
-# Means with Standard errors
-ggplot(MEANS, aes(x = Elevation, y = ave_Effort)) +
-  geom_bar(aes(fill=Elevation, col=Elevation), 
-           stat="identity", width = 0.5)+
-  geom_errorbar(aes(ymin = ave_Effort-SD/sqrt(N), ymax=ave_Effort+SD/sqrt(N)),
-                width = 0.2)+
-  scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
-  scale_color_manual(values=c("#E69F00", "#56B4E9"))+
-  facet_wrap(~Speed) +
-  scale_y_continuous(name = "Effort (%)", limits = c(0,100)) +
-  theme(axis.text=element_text(size=16, color="black"), 
-        axis.title=element_text(size=16, face="bold"),
-        plot.title=element_text(size=16, face="bold", hjust=0.5),
-        panel.grid.minor = element_blank(),
-        strip.text = element_text(size=16, face="bold"),
-        legend.position = "none")
-
-
-# All the data
+# Plot all data
 ggplot(DAT2, aes(x = Elevation, y = Effort)) +
   geom_point(aes(fill=Elevation), pch=21, size=2,
              position=position_jitter(w=0.2, h=0))+
-  facet_wrap(~Speed) +
-  scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
-  scale_color_manual(values=c("#E69F00", "#56B4E9"))+ 
+  geom_boxplot(fill="white", col="black",
+               alpha=0.4, width=0.5)+
+  scale_fill_manual(values=c("#d95f02", "#7570b3"))+
+  scale_color_manual(values=c("#d95f02", "#7570b3"))+ 
   scale_y_continuous(name = "Effort (%)", limits = c(0,100)) +
   theme(axis.text=element_text(size=16, color="black"), 
         axis.title=element_text(size=16, face="bold"),
@@ -103,7 +69,6 @@ ggplot(DAT2, aes(x = Elevation, y = Effort)) +
         panel.grid.minor = element_blank(),
         strip.text = element_text(size=16, face="bold"),
         legend.position = "none")
-
 
 # Boxplots
 ggplot(DAT2, aes(x = Elevation, y = Effort)) +
@@ -112,8 +77,8 @@ ggplot(DAT2, aes(x = Elevation, y = Effort)) +
   geom_boxplot(fill="white", col="black", outlier.shape = "na",
                alpha=0.4, width=0.5)+
   facet_wrap(~Speed) +
-  scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
-  scale_color_manual(values=c("#E69F00", "#56B4E9"))+  
+  scale_fill_manual(values=c("#d95f02", "#7570b3"))+
+  scale_color_manual(values=c("#d95f02", "#7570b3"))+  
   scale_y_continuous(name = "Effort (%)", limits = c(0,100)) +
   theme(axis.text=element_text(size=16, color="black"), 
         axis.title=element_text(size=16, face="bold"),
@@ -122,29 +87,101 @@ ggplot(DAT2, aes(x = Elevation, y = Effort)) +
         strip.text = element_text(size=16, face="bold"),
         legend.position = "none")
 
+# Continuous Data
+MOTION_DAT <- read.csv("./data/gait_example_data/motion_data.csv")
+head(MOTION_DAT)
+MOTION_DAT <- MOTION_DAT %>% select(`DDH25.RICAL_X`, 
+                                    `DDH25.RICAL_Y`,
+                                    `DDH25.RICAL_Z`, 
+                                    `DDH25.RLKNE_X`, 
+                                    `DDH25.RLKNE_Y`,
+                                    `DDH25.RLKNE_Z`) %>%
+  rename(right_heel_x = `DDH25.RICAL_X`, 
+         right_heel_y = `DDH25.RICAL_Y`,
+         right_heel_z = `DDH25.RICAL_Z`,
+         right_lat_knee_x = `DDH25.RLKNE_X`, 
+         right_lat_knee_y = `DDH25.RLKNE_Y`,
+         right_lat_knee_z = `DDH25.RLKNE_Z`) %>%
+  rownames_to_column(var="sample") %>%
+  mutate(sample = as.numeric(sample)-3) # To start the samples at 1
 
-# Connect the dots
-head(DAT2)
-DAT3 <- DAT2 %>% 
-  group_by(Elevation, Speed) %>%
-  summarise(Effort=mean(Effort))
-head(DAT3)
+# Create the scatter plot
+ggplot(data = MOTION_DAT, aes(x = right_heel_x, y = right_lat_knee_x)) +
+  geom_point(color="#1b9e77") +
+  ggtitle("R heel vs R knee position during running") +
+  xlab("Right Heel Position") +
+  ylab("Right Knee Position") +
+  scale_fill_manual(values=c("#1b9e77")) +
+  scale_color_manual(values=c("#1b9e77"))+
+  geom_smooth(method = "lm", se = TRUE,color="black")
 
-ggplot(DAT2, aes(x = Elevation, y = Effort)) +
-  geom_point(aes(fill=Elevation), pch=21, size=2)+
-  geom_line(aes(group=SUBJ, lty=Speed), col="grey40")+
-  facet_wrap(~Speed) +
-  scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
-  scale_color_manual(values=c("#E69F00", "#56B4E9"))+
-  scale_y_continuous(name = "Effort (%)", limits = c(0,100)) +
+# Bin the data
+dataRange = max(MOTION_DAT$right_heel_x)-min(MOTION_DAT$right_heel_x)
+cut_points = c(min(MOTION_DAT$right_heel_x),
+               min(MOTION_DAT$right_heel_x)+(dataRange/4),
+               min(MOTION_DAT$right_heel_x)+(dataRange/2),
+               min(MOTION_DAT$right_heel_x)+(3*(dataRange/4)),
+               max(MOTION_DAT$right_heel_x))
+#bin1 <- MOTION_DAT %>% filter(MOTION_DAT$right_heel_x<cut_points[2])
+#bin2 <- MOTION_DAT %>% filter(MOTION_DAT$right_heel_x>cut_points[2]&MOTION_DAT$right_heel_x<cut_points[3])
+#bin3 <- MOTION_DAT %>% filter(MOTION_DAT$right_heel_x>cut_points[3]&MOTION_DAT$right_heel_x<cut_points[4])
+#bin4 <- MOTION_DAT %>% filter(MOTION_DAT$right_heel_x>cut_points[4]&MOTION_DAT$right_heel_x<cut_points[5])
+
+MOTION_DAT$bin = rep(0,nrow(MOTION_DAT))
+for (i in 1:nrow(MOTION_DAT)) {
+  if(MOTION_DAT$right_heel_x[i]<=cut_points[2]){
+    MOTION_DAT$bin[i] = 1
+  }
+  if(MOTION_DAT$right_heel_x[i]>cut_points[2]&MOTION_DAT$right_heel_x[i]<=cut_points[3]){
+    MOTION_DAT$bin[i] = 2
+  }
+  if(MOTION_DAT$right_heel_x[i]>cut_points[3]&MOTION_DAT$right_heel_x[i]<=cut_points[4]){
+    MOTION_DAT$bin[i] = 3
+  }
+  if(MOTION_DAT$right_heel_x[i]>cut_points[4]&MOTION_DAT$right_heel_x[i]<=cut_points[5]){
+    MOTION_DAT$bin[i] = 4
+  }
+}
+MOTION_DAT$bin = as.factor(MOTION_DAT$bin)
+
+# Boxplots
+ggplot(MOTION_DAT, aes(x = bin, y = right_lat_knee_x)) +
+  geom_point(aes(fill=bin), pch=21, size=2,
+             position=position_jitter(w=0.2, h=0))+
+  geom_boxplot(fill="white", col="black",
+               alpha=0.4, width=0.5)+
+  scale_fill_manual(values=c("#a6cee3", "#1f78b4","#b2df8a","#33a02c"))+
+  scale_color_manual(values=c("#a6cee3", "#1f78b4","#b2df8a","#33a02c"))+  
+  scale_y_continuous(name = "R knee Position", limits = c(460,530)) +
   theme(axis.text=element_text(size=16, color="black"), 
         axis.title=element_text(size=16, face="bold"),
         plot.title=element_text(size=16, face="bold", hjust=0.5),
         panel.grid.minor = element_blank(),
         strip.text = element_text(size=16, face="bold"),
-        legend.position = "none") +
-  stat_smooth(aes(group=Speed, lty=Speed), col="black", lwd=2, se=FALSE)+
-  geom_point(data=DAT3, aes(fill=Elevation), shape=22, size=5)
+        legend.position = "none")
+
+# Connect the dots
+#head(DAT2)
+#DAT3 <- DAT2 %>% 
+#  group_by(Elevation, Speed) %>%
+#  summarise(Effort=mean(Effort))
+#head(DAT3)
+
+#ggplot(DAT2, aes(x = Elevation, y = Effort)) +
+#  geom_point(aes(fill=Elevation), pch=21, size=2)+
+#  geom_line(aes(group=SUBJ, lty=Speed), col="grey40")+
+#  facet_wrap(~Speed) +
+#  scale_fill_manual(values=c("#E69F00", "#56B4E9"))+
+#  scale_color_manual(values=c("#E69F00", "#56B4E9"))+
+#  scale_y_continuous(name = "Effort (%)", limits = c(0,100)) +
+#  theme(axis.text=element_text(size=16, color="black"), 
+#        axis.title=element_text(size=16, face="bold"),
+#        plot.title=element_text(size=16, face="bold", hjust=0.5),
+#        panel.grid.minor = element_blank(),
+#        strip.text = element_text(size=16, face="bold"),
+#        legend.position = "none") +
+#  stat_smooth(aes(group=Speed, lty=Speed), col="black", lwd=2, se=FALSE)+
+#  geom_point(data=DAT3, aes(fill=Elevation), shape=22, size=5)
 
 
 
